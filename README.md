@@ -150,7 +150,7 @@ This walkthrough include steps and links to documentation on how to set up Prome
     4.3. Add the following PromQL query to graph the CPU usage of your windows instances.
     
     ```
-    sum by (instance) (rate(windows_cpu_time_total{mode!="idle"}[$__rate_interval])) / count by (instance) (rate(windows_cpu_time_total{cluster="$cluster",mode="idle"}[$__rate_interval]))
+    sum by (instance) (rate(windows_cpu_time_total{mode!="idle"}[5m])) / count by (instance) (rate(windows_cpu_time_total{mode="idle"}[5m]))
     ```
 
     4.4. In the panel options, select `Percent (0-1)` as the unit.
@@ -161,11 +161,11 @@ This walkthrough include steps and links to documentation on how to set up Prome
 
     |Metric|Query|Unit|
     |----|----|----|
-    |Memory|`(1 - windows_os_physical_memory_free_bytes{cluster="$cluster"} / windows_cs_physical_memory_bytes{cluster="$cluster"})`|Percent (0.0-1.0)|
-    |Network (sent)|`rate(windows_net_bytes_sent_total{}[$__rate_interval])`|bytes/sec|
-    |Network (received)|`rate(windows_net_bytes_received_total{}[$__rate_interval])`|bytes/sec|
-    |Disk (written)|`sum by (instance) (rate(windows_physical_disk_write_bytes_total{}[$__rate_interval]))`|bytes/sec|
-    |Disk (read)|`sum by (instance) (rate(windows_physical_disk_read_bytes_total{}[$__rate_interval]))`|bytes/sec|
+    |Memory|`(1 - windows_os_physical_memory_free_bytes{} / windows_cs_physical_memory_bytes{})`|Percent (0.0-1.0)|
+    |Network (sent)|`rate(windows_net_bytes_sent_total{}[5m])`|bytes/sec|
+    |Network (received)|`rate(windows_net_bytes_received_total{}[5m])`|bytes/sec|
+    |Disk (written)|`sum by (instance) (rate(windows_physical_disk_write_bytes_total{}[5m]))`|bytes/sec|
+    |Disk (read)|`sum by (instance) (rate(windows_physical_disk_read_bytes_total{}[5m]))`|bytes/sec|
     
 
 5. Visualize the CPU usage of your windows containers.
@@ -177,7 +177,7 @@ This walkthrough include steps and links to documentation on how to set up Prome
     5.3. Add the following PromQL query to visualize the CPU usage of your windows containers.
 
     ```
-    kube_pod_container_info{} * on(container_id) group_left rate(windows_container_cpu_usage_seconds_total{}[$__rate_interval])
+    kube_pod_container_info{} * on(container_id) group_left rate(windows_container_cpu_usage_seconds_total{}[5m])
     ```
 
     The query above shows how to enrich _windows-exporter_ container metrics - such as `windows_container_cpu_usage_seconds_total` - with kubernetes metadata by joining with the `kube_pod_container_info` metric from _kube-state-metrics_ on the `container_id` label. `kube_pod_container_info` contains other labels such as `pod`, `namespace` and `container`, which can be used to filter specific containers and to label the visualization.
@@ -189,10 +189,10 @@ This walkthrough include steps and links to documentation on how to set up Prome
     |Metric|Query|Unit|
     |----|----|----|
     |Memory|`kube_pod_container_info{} * on(container_id) group_left windows_container_memory_usage_private_working_set_bytes{}`|bytes|
-    |Network (sent)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_transmit_bytes_total{}[$__rate_interval])`|bytes/sec|
-    |Network (received)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_receive_bytes_total{}[$__rate_interval])`|bytes/sec|
-    |Disk (written)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_write_size_bytes_total{}[$__rate_interval])`|bytes/sec|
-    |Disk (read)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_read_size_bytes_total{}[$__rate_interval])`|bytes/sec|
+    |Network (sent)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_transmit_bytes_total{}[5m])`|bytes/sec|
+    |Network (received)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_receive_bytes_total{}[5m])`|bytes/sec|
+    |Disk (written)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_write_size_bytes_total{}[5m])`|bytes/sec|
+    |Disk (read)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_read_size_bytes_total{}[5m])`|bytes/sec|
 
 ## Conclusion
 
