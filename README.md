@@ -177,7 +177,7 @@ This walkthrough include steps and links to documentation on how to set up Prome
     5.3. Add the following PromQL query to visualize the CPU usage of your windows containers.
 
     ```
-    kube_pod_container_info{} * on(container_id) group_left rate(windows_container_cpu_usage_seconds_total{}[5m])
+    kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (rate(windows_container_cpu_usage_seconds_total{}[5m]))
     ```
 
     The query above shows how to enrich _windows-exporter_ container metrics - such as `windows_container_cpu_usage_seconds_total` - with kubernetes metadata by joining with the `kube_pod_container_info` metric from _kube-state-metrics_ on the `container_id` label. `kube_pod_container_info` contains other labels such as `pod`, `namespace` and `container`, which can be used to filter specific containers and to label the visualization.
@@ -188,11 +188,11 @@ This walkthrough include steps and links to documentation on how to set up Prome
 
     |Metric|Query|Unit|
     |----|----|----|
-    |Memory|`kube_pod_container_info{} * on(container_id) group_left windows_container_memory_usage_private_working_set_bytes{}`|bytes|
-    |Network (sent)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_transmit_bytes_total{}[5m])`|bytes/sec|
-    |Network (received)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_network_receive_bytes_total{}[5m])`|bytes/sec|
-    |Disk (written)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_write_size_bytes_total{}[5m])`|bytes/sec|
-    |Disk (read)|`kube_pod_container_info{} * on(container_id) group_left rate(windows_container_storage_read_size_bytes_total{}[5m])`|bytes/sec|
+    |Memory|`kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (windows_container_memory_usage_private_working_set_bytes{})`|bytes|
+    |Network (sent)|`kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (rate(windows_container_network_transmit_bytes_total{}[5m]))`|bytes/sec|
+    |Network (received)|`kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (rate(windows_container_network_receive_bytes_total{}[5m]))`|bytes/sec|
+    |Disk (written)|`kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (rate(windows_container_storage_write_size_bytes_total{}[5m]))`|bytes/sec|
+    |Disk (read)|`kube_pod_container_info{} * on(container_id) group_left avg by (container_id) (rate(windows_container_storage_read_size_bytes_total{}[5m]))`|bytes/sec|
 
 ## Conclusion
 
